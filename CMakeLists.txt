@@ -11,7 +11,7 @@ include(CheckCXXCompilerFlag)
 ###
 project(YAML_CPP VERSION 0.7.0)
 
-set (PACKAGE_NAME        "trunk_yaml_cpp")
+set (PACKAGE_NAME        "tmaps_yaml_cpp")
 set (PACKAGE_VERSION     "0.7.0")
 set (PACKAGE_STRING      "${PACKAGE_NAME} ${PACKAGE_VERSION}")
 set (PACKAGE_TARNAME     "${PACKAGE_NAME}-${PACKAGE_VERSION}")
