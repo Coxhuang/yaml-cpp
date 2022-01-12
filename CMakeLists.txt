@@ -11,11 +11,29 @@ include(CheckCXXCompilerFlag)
 ###
 project(YAML_CPP VERSION 0.6.3)
 
+set (PACKAGE_NAME        "tmaps_yaml_cpp")
+set (PACKAGE_VERSION     "0.6.3")
+set (PACKAGE_STRING      "${PACKAGE_NAME} ${PACKAGE_VERSION}")
+set (PACKAGE_TARNAME     "${PACKAGE_NAME}-${PACKAGE_VERSION}")
+# set (PACKAGE_BUGREPORT   "http://git-rd.trunk.tech/infra/incubator/world/issues")
+# set (PACKAGE_DESCRIPTION "auto driving system runtime framework")
+# set (PACKAGE_URL         "http://git-rd.trunk.tech/infra/incubator/world")
+
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
+include(cmake/cater.cmake)
+
+version_numbers(${PACKAGE_VERSION}
+		PACKAGE_VERSION_MAJOR
+		PACKAGE_VERSION_MINOR
+		PACKAGE_VERSION_PATCH
+		)
+set(PACKAGE_SOVERSION "${PACKAGE_VERSION_MAJOR}.${PACKAGE_VERSION_MINOR}")
+
 ###
 ### Project options
 ###
 ## Project stuff
-option(YAML_CPP_BUILD_TESTS "Enable testing" ON)
+option(YAML_CPP_BUILD_TESTS "Enable testing" OFF)
 option(YAML_CPP_BUILD_TOOLS "Enable parse tools" ON)
 option(YAML_CPP_BUILD_CONTRIB "Enable contrib stuff in library" ON)
 option(YAML_CPP_INSTALL "Enable generation of install target" ON)
@@ -24,19 +42,19 @@ option(YAML_CPP_INSTALL "Enable generation of install target" ON)
 # --> General
 # see http://www.cmake.org/cmake/help/cmake2.6docs.html#variable:BUILD_SHARED_LIBS
 #     http://www.cmake.org/cmake/help/cmake2.6docs.html#command:add_library
-option(YAML_BUILD_SHARED_LIBS "Build Shared Libraries" OFF)
+option(YAML_BUILD_SHARED_LIBS "Build Shared Libraries" ON)
 
 # --> Apple
 if(APPLE)
-    option(YAML_APPLE_UNIVERSAL_BIN "Apple: Build universal binary" OFF)
+	option(YAML_APPLE_UNIVERSAL_BIN "Apple: Build universal binary" OFF)
 endif()
 
 # --> Microsoft Visual C++
 # see http://msdn.microsoft.com/en-us/library/aa278396(v=VS.60).aspx
 #     http://msdn.microsoft.com/en-us/library/2kzt1wy3(v=VS.71).aspx
 if(MSVC)
-    option(YAML_MSVC_SHARED_RT "MSVC: Build with shared runtime libs (/MD)" ON)
-    option(YAML_MSVC_STHREADED_RT "MSVC: Build with single-threaded static runtime libs (/ML until VS .NET 2003)" OFF)
+	option(YAML_MSVC_SHARED_RT "MSVC: Build with shared runtime libs (/MD)" ON)
+	option(YAML_MSVC_STHREADED_RT "MSVC: Build with single-threaded static runtime libs (/ML until VS .NET 2003)" OFF)
 endif()
 
 ###
@@ -47,22 +65,22 @@ endif()
 # function to collect all the sources from sub-directories
 # into a single list
 function(add_sources)
-  get_property(is_defined GLOBAL PROPERTY SRCS_LIST DEFINED)
-  if(NOT is_defined)
-    define_property(GLOBAL PROPERTY SRCS_LIST
-      BRIEF_DOCS "List of source files"
-      FULL_DOCS "List of all source files in the entire project")
-  endif()
-  # make absolute paths
-  set(SRCS)
-  foreach(s IN LISTS ARGN)
-    if(NOT IS_ABSOLUTE "${s}")
-      get_filename_component(s "${s}" ABSOLUTE)
-    endif()
-    list(APPEND SRCS "${s}")
-  endforeach()
-  # append to global list
-  set_property(GLOBAL APPEND PROPERTY SRCS_LIST "${SRCS}")
+	get_property(is_defined GLOBAL PROPERTY SRCS_LIST DEFINED)
+	if(NOT is_defined)
+		define_property(GLOBAL PROPERTY SRCS_LIST
+				BRIEF_DOCS "List of source files"
+				FULL_DOCS "List of all source files in the entire project")
+	endif()
+	# make absolute paths
+	set(SRCS)
+	foreach(s IN LISTS ARGN)
+		if(NOT IS_ABSOLUTE "${s}")
+			get_filename_component(s "${s}" ABSOLUTE)
+		endif()
+		list(APPEND SRCS "${s}")
+	endforeach()
+	# append to global list
+	set_property(GLOBAL APPEND PROPERTY SRCS_LIST "${SRCS}")
 endfunction(add_sources)
 
 set(header_directory "include/yaml-cpp/")
@@ -80,13 +98,13 @@ else()
 endif()
 
 set(library_sources
-  ${sources}
-  ${public_headers}
-  ${private_headers}
-  ${contrib_sources}
-  ${contrib_public_headers}
-  ${contrib_private_headers}
-)
+		${sources}
+		${public_headers}
+		${private_headers}
+		${contrib_sources}
+		${contrib_public_headers}
+		${contrib_private_headers}
+		)
 add_sources(${library_sources})
 
 if(VERBOSE)
@@ -99,8 +117,8 @@ if(VERBOSE)
 endif()
 
 if (CMAKE_VERSION VERSION_LESS 2.8.12)
-    include_directories(${YAML_CPP_SOURCE_DIR}/src)
-    include_directories(${YAML_CPP_SOURCE_DIR}/include)
+	include_directories(${YAML_CPP_SOURCE_DIR}/src)
+	include_directories(${YAML_CPP_SOURCE_DIR}/include)
 endif()
 
 
@@ -138,8 +156,8 @@ endif()
 
 # GCC or Clang or Intel Compiler specialities
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR
-   (CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND NOT "x${CMAKE_CXX_SIMULATE_ID}" STREQUAL "xMSVC") OR
-   CMAKE_CXX_COMPILER_ID MATCHES "Intel")
+(CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND NOT "x${CMAKE_CXX_SIMULATE_ID}" STREQUAL "xMSVC") OR
+		CMAKE_CXX_COMPILER_ID MATCHES "Intel")
 
 	### General stuff
 	if(WIN32)
@@ -170,13 +188,13 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR
 	### Make specific
 	if(${CMAKE_BUILD_TOOL} MATCHES make OR ${CMAKE_BUILD_TOOL} MATCHES gmake)
 		add_custom_target(debuggable ${CMAKE_MAKE_PROGRAM} clean
-			COMMAND ${CMAKE_COMMAND} -DCMAKE_BUILD_TYPE=Debug ${CMAKE_SOURCE_DIR}
-			COMMENT "Adjusting settings for debug compilation"
-			VERBATIM)
+				COMMAND ${CMAKE_COMMAND} -DCMAKE_BUILD_TYPE=Debug ${CMAKE_SOURCE_DIR}
+				COMMENT "Adjusting settings for debug compilation"
+				VERBATIM)
 		add_custom_target(releasable ${CMAKE_MAKE_PROGRAM} clean
-			COMMAND ${CMAKE_COMMAND} -DCMAKE_BUILD_TYPE=Release ${CMAKE_SOURCE_DIR}
-			COMMENT "Adjusting settings for release compilation"
-			VERBATIM)
+				COMMAND ${CMAKE_COMMAND} -DCMAKE_BUILD_TYPE=Release ${CMAKE_SOURCE_DIR}
+				COMMENT "Adjusting settings for release compilation"
+				VERBATIM)
 	endif()
 endif()
 
@@ -243,79 +261,79 @@ set(INCLUDE_INSTALL_DIR ${INCLUDE_INSTALL_ROOT_DIR}/yaml-cpp)
 set(LIB_INSTALL_DIR "lib${LIB_SUFFIX}")
 
 set(_INSTALL_DESTINATIONS
-	RUNTIME DESTINATION bin
-	LIBRARY DESTINATION ${LIB_INSTALL_DIR}
-	ARCHIVE DESTINATION ${LIB_INSTALL_DIR}
-)
+		RUNTIME DESTINATION bin
+		LIBRARY DESTINATION ${LIB_INSTALL_DIR}
+		ARCHIVE DESTINATION ${LIB_INSTALL_DIR}
+		)
 
 
 ###
 ### Library
 ###
 if(YAML_BUILD_SHARED_LIBS)
-    add_library(yaml-cpp SHARED ${library_sources})
+	add_library(yaml-cpp SHARED ${library_sources})
 else()
-    add_library(yaml-cpp STATIC ${library_sources})
+	add_library(yaml-cpp STATIC ${library_sources})
 endif()
 
 if (NOT CMAKE_VERSION VERSION_LESS 2.8.12)
-    target_include_directories(yaml-cpp
-        PUBLIC $<BUILD_INTERFACE:${YAML_CPP_SOURCE_DIR}/include>
-               $<INSTALL_INTERFACE:${INCLUDE_INSTALL_ROOT_DIR}>
-        PRIVATE $<BUILD_INTERFACE:${YAML_CPP_SOURCE_DIR}/src>)
+	target_include_directories(yaml-cpp
+			PUBLIC $<BUILD_INTERFACE:${YAML_CPP_SOURCE_DIR}/include>
+			$<INSTALL_INTERFACE:${INCLUDE_INSTALL_ROOT_DIR}>
+			PRIVATE $<BUILD_INTERFACE:${YAML_CPP_SOURCE_DIR}/src>)
 endif()
 
 set_target_properties(yaml-cpp PROPERTIES
-    CXX_STANDARD 11
-    CXX_STANDARD_REQUIRED ON
-)
+		CXX_STANDARD 11
+		CXX_STANDARD_REQUIRED ON
+		)
 
 set_target_properties(yaml-cpp PROPERTIES
-  COMPILE_FLAGS "${yaml_c_flags} ${yaml_cxx_flags}"
-)
+		COMPILE_FLAGS "${yaml_c_flags} ${yaml_cxx_flags}"
+		)
 
 set_target_properties(yaml-cpp PROPERTIES
-	VERSION "${YAML_CPP_VERSION}"
-	SOVERSION "${YAML_CPP_VERSION_MAJOR}.${YAML_CPP_VERSION_MINOR}"
-	PROJECT_LABEL "yaml-cpp ${LABEL_SUFFIX}"
-)
+		VERSION "${YAML_CPP_VERSION}"
+		SOVERSION "${YAML_CPP_VERSION_MAJOR}.${YAML_CPP_VERSION_MINOR}"
+		PROJECT_LABEL "yaml-cpp ${LABEL_SUFFIX}"
+		)
 
 if(IPHONE)
 	set_target_properties(yaml-cpp PROPERTIES
-		XCODE_ATTRIBUTE_IPHONEOS_DEPLOYMENT_TARGET "3.0"
-	)
+			XCODE_ATTRIBUTE_IPHONEOS_DEPLOYMENT_TARGET "3.0"
+			)
 endif()
 
 if(MSVC)
 	if(NOT YAML_BUILD_SHARED_LIBS)
 		# correct library names
 		set_target_properties(yaml-cpp PROPERTIES
-			DEBUG_POSTFIX "${LIB_TARGET_SUFFIX}d"
-			RELEASE_POSTFIX "${LIB_TARGET_SUFFIX}"
-			MINSIZEREL_POSTFIX "${LIB_TARGET_SUFFIX}"
-			RELWITHDEBINFO_POSTFIX "${LIB_TARGET_SUFFIX}"
-		)
+				DEBUG_POSTFIX "${LIB_TARGET_SUFFIX}d"
+				RELEASE_POSTFIX "${LIB_TARGET_SUFFIX}"
+				MINSIZEREL_POSTFIX "${LIB_TARGET_SUFFIX}"
+				RELWITHDEBINFO_POSTFIX "${LIB_TARGET_SUFFIX}"
+				)
 	endif()
 endif()
 
 if (YAML_CPP_INSTALL)
 	install(TARGETS yaml-cpp EXPORT yaml-cpp-targets ${_INSTALL_DESTINATIONS})
 	install(
-		DIRECTORY ${header_directory}
-		DESTINATION ${INCLUDE_INSTALL_DIR}
-		FILES_MATCHING PATTERN "*.h"
+			DIRECTORY ${header_directory}
+			DESTINATION ${INCLUDE_INSTALL_DIR}
+			FILES_MATCHING PATTERN "*.h"
 	)
 endif()
 
 export(
-    TARGETS yaml-cpp
-    FILE "${PROJECT_BINARY_DIR}/yaml-cpp-targets.cmake")
+		TARGETS yaml-cpp
+		FILE "${PROJECT_BINARY_DIR}/yaml-cpp-targets.cmake")
 export(PACKAGE yaml-cpp)
 set(EXPORT_TARGETS yaml-cpp CACHE INTERNAL "export targets")
 
 set(CONFIG_INCLUDE_DIRS "${YAML_CPP_SOURCE_DIR}/include")
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/yaml-cpp-config.cmake.in
-	"${PROJECT_BINARY_DIR}/yaml-cpp-config.cmake" @ONLY)
+		"${PROJECT_BINARY_DIR}/yaml-cpp-config.cmake" @ONLY)
 
 if(WIN32 AND NOT CYGWIN)
 	set(INSTALL_CMAKE_DIR CMake)
@@ -327,16 +345,16 @@ endif()
 file(RELATIVE_PATH REL_INCLUDE_DIR "${CMAKE_INSTALL_PREFIX}/${INSTALL_CMAKE_DIR}" "${CMAKE_INSTALL_PREFIX}/${INCLUDE_INSTALL_ROOT_DIR}")
 set(CONFIG_INCLUDE_DIRS "\${YAML_CPP_CMAKE_DIR}/${REL_INCLUDE_DIR}")
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/yaml-cpp-config.cmake.in
-	"${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/yaml-cpp-config.cmake" @ONLY)
+		"${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/yaml-cpp-config.cmake" @ONLY)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/yaml-cpp-config-version.cmake.in
-	"${PROJECT_BINARY_DIR}/yaml-cpp-config-version.cmake" @ONLY)
+		"${PROJECT_BINARY_DIR}/yaml-cpp-config-version.cmake" @ONLY)
 
 if (YAML_CPP_INSTALL)
 	install(FILES
-		"${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/yaml-cpp-config.cmake"
-		"${PROJECT_BINARY_DIR}/yaml-cpp-config-version.cmake"
-		DESTINATION "${INSTALL_CMAKE_DIR}" COMPONENT dev)
+			"${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/yaml-cpp-config.cmake"
+			"${PROJECT_BINARY_DIR}/yaml-cpp-config-version.cmake"
+			DESTINATION "${INSTALL_CMAKE_DIR}" COMPONENT dev)
 	install(EXPORT yaml-cpp-targets DESTINATION ${INSTALL_CMAKE_DIR})
 
 	if(UNIX)
@@ -362,6 +380,126 @@ endif()
 ### Formatting
 get_property(all_sources GLOBAL PROPERTY SRCS_LIST)
 add_custom_target(format
-	COMMAND clang-format --style=file -i ${all_sources}
-	COMMENT "Running clang-format"
-	VERBATIM)
+		COMMAND clang-format --style=file -i ${all_sources}
+		COMMENT "Running clang-format"
+		VERBATIM)
+
+
+
+
+##################################################################################
+# packaging
+#####################################################################################
+option(BUILD_PACKAGING "build packaging" ON)
+if (BUILD_PACKAGING)
+	# default package generators
+	if (APPLE)
+		set (PACKAGE_GENERATOR        "PackageMaker")
+		set (PACKAGE_SOURCE_GENERATOR "TGZ;ZIP")
+	elseif (UNIX)
+		set (PACKAGE_GENERATOR        "DEB") # RPM
+		set (PACKAGE_SOURCE_GENERATOR "TGZ;ZIP")
+	else ()
+		set (PACKAGE_GENERATOR        "ZIP")
+		set (PACKAGE_SOURCE_GENERATOR "ZIP")
+	endif ()
+
+	# used package generators
+	set (CPACK_GENERATOR        "${PACKAGE_GENERATOR}"        CACHE STRING "List of binary package generators (CPack).")
+	set (CPACK_SOURCE_GENERATOR "${PACKAGE_SOURCE_GENERATOR}" CACHE STRING "List of source package generators (CPack).")
+	mark_as_advanced (CPACK_GENERATOR CPACK_SOURCE_GENERATOR)
+
+	# some package generators (e.g., PackageMaker) do not allow .md extension
+	configure_file ("${CMAKE_CURRENT_LIST_DIR}/README.md" "${CMAKE_CURRENT_BINARY_DIR}/README.txt" COPYONLY)
+
+	# common package information
+	set (CPACK_PACKAGE_VENDOR              "trunk")
+	set (CPACK_PACKAGE_CONTACT             "cater@trunk.tech")
+	set (CPACK_PACKAGE_NAME                "${PACKAGE_NAME}")
+	set (CPACK_PACKAGE_VERSION             "${PACKAGE_VERSION}")
+	set (CPACK_PACKAGE_VERSION_MAJOR       "${PACKAGE_VERSION_MAJOR}")
+	set (CPACK_PACKAGE_VERSION_MINOR       "${PACKAGE_VERSION_MINOR}")
+	set (CPACK_PACKAGE_VERSION_PATCH       "${PACKAGE_VERSION_PATCH}")
+	set (CPACK_PACKAGE_DESCRIPTION_SUMMARY "${PACKAGE_DESCRIPTION}")
+	set (CPACK_RESOURCE_FILE_WELCOME       "${CMAKE_CURRENT_BINARY_DIR}/README.txt")
+	set (CPACK_RESOURCE_FILE_LICENSE       "${CMAKE_CURRENT_LIST_DIR}/LICENSE")
+	set (CPACK_PACKAGE_DESCRIPTION_FILE    "${CMAKE_CURRENT_BINARY_DIR}/README.txt")
+	set (CPACK_INSTALL_PREFIX              "${CMAKE_INSTALL_PREFIX}")
+	set (CPACK_OUTPUT_FILE_PREFIX          packages)
+	set (CPACK_PACKAGE_RELOCATABLE         TRUE)
+	set (CPACK_MONOLITHIC_INSTALL          TRUE)
+
+	# RPM package information -- used in cmake/package.cmake.in also for DEB
+	set (CPACK_RPM_PACKAGE_GROUP   "Development/Libraries")
+	set (CPACK_RPM_PACKAGE_LICENSE "BSD")
+	set (CPACK_RPM_PACKAGE_URL     "${PACKAGE_URL}")
+	set (CPACK_RPM_CHANGELOG_FILE  "${CMAKE_CURRENT_LIST_DIR}/ChangeLog.txt")
+
+	# if (INSTALL_HEADERS)
+	#   set (CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_LIST_DIR}/doc/index.html")
+	# else ()
+	#   set (CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_LIST_DIR}/cmake/README_runtime.txt")
+	# endif ()
+
+	set(CPACK_PACKAGING_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX})
+
+	# system/architecture
+	if (WINDOWS)
+		if (CMAKE_CL_64)
+			set (CPACK_SYSTEM_NAME "win64")
+		else ()
+			set (CPACK_SYSTEM_NAME "win32")
+		endif ()
+		set (CPACK_PACKAGE_ARCHITECTURE)
+	elseif (APPLE)
+		set (CPACK_PACKAGE_ARCHITECTURE darwin)
+	else ()
+		string (TOLOWER "${CMAKE_SYSTEM_NAME}" CPACK_SYSTEM_NAME)
+		if (CMAKE_CXX_FLAGS MATCHES "-m32")
+			set (CPACK_PACKAGE_ARCHITECTURE i386)
+		else ()
+			execute_process (
+					COMMAND         dpkg --print-architecture
+					RESULT_VARIABLE RV
+					OUTPUT_VARIABLE CPACK_PACKAGE_ARCHITECTURE
+			)
+			if (RV EQUAL 0)
+				string (STRIP "${CPACK_PACKAGE_ARCHITECTURE}" CPACK_PACKAGE_ARCHITECTURE)
+			else ()
+				execute_process (COMMAND uname -m OUTPUT_VARIABLE CPACK_PACKAGE_ARCHITECTURE)
+				if (CPACK_PACKAGE_ARCHITECTURE MATCHES "x86_64")
+					set (CPACK_PACKAGE_ARCHITECTURE amd64)
+				else ()
+					set (CPACK_PACKAGE_ARCHITECTURE i386)
+				endif ()
+			endif ()
+		endif ()
+	endif ()
+
+	# source package settings
+	set (CPACK_SOURCE_TOPLEVEL_TAG      "source")
+	set (CPACK_SOURCE_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}")
+	set (CPACK_SOURCE_IGNORE_FILES      "/\\\\.git/;\\\\.swp$;\\\\.#;/#;\\\\.*~;cscope\\\\.*;/[Bb]uild[.+-_a-zA-Z0-9]*/")
+
+	# default binary package settings
+	set (CPACK_INCLUDE_TOPLEVEL_DIRECTORY TRUE)
+	set (CPACK_PACKAGE_FILE_NAME          "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${CPACK_SYSTEM_NAME}")
+	if (CPACK_PACKAGE_ARCHITECTURE)
+		set (CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}-${CPACK_PACKAGE_ARCHITECTURE}")
+	endif ()
+
+	# generator specific configuration file
+	#
+	# allow package maintainers to use their own configuration file
+	# $ cmake -DCPACK_PROJECT_CONFIG_FILE:FILE=/path/to/package/config
+	if (NOT CPACK_PROJECT_CONFIG_FILE)
+		configure_file (
+				"${CMAKE_CURRENT_LIST_DIR}/cmake/package.cmake.in"
+				"${PROJECT_BINARY_DIR}/${PACKAGE_NAME}-package.cmake" @ONLY
+		)
+		set (CPACK_PROJECT_CONFIG_FILE "${PROJECT_BINARY_DIR}/${PACKAGE_NAME}-package.cmake")
+	endif ()
+
+	include (CPack)
+
+endif () # BUILD_PACKAGING
